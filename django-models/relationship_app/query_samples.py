@@ -6,7 +6,7 @@ def get_books_by_author(author_name):
         # Retrieve the author
         author = Author.objects.get(name=author_name)
         # Filter books by this author
-        books = Book.objects.filter(author=author)
+        books = objects.filter(author=author)
         return books
     except Author.DoesNotExist:
         return None
