@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseForbidden
 from .models import UserProfile
+from django.contrib.auth.decorators import permission_required
+
 
 def list_books(request):
     books = Book.objects.all()  # Fetch all books from the database
