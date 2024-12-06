@@ -22,6 +22,8 @@ from .forms import CommentForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
 
+from .models import Tag  # Import the Tag model if it's in the same app
+
 
 def register(request):
     if request.method == 'POST':
@@ -195,3 +197,24 @@ def delete_comment(request, pk):
     post_pk = comment.post.pk
     comment.delete()
     return redirect('blog:post_detail', pk=post_pk)
+
+def create_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            # Save the post instance
+            post = form.save()
+            # The tags will be automatically saved by django-taggit
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = PostForm()
+    return render(request, 'blog/create_post.html', {'form': form})
+
+def search_posts(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(tags__name__icontains=query) | Post.objects.filter(content__icontains=query)
+    else:
+        posts = Post.objects.all()
+
+    return render(request, 'search_results.html', {'posts': posts})

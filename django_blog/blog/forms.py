@@ -8,6 +8,12 @@ from .models import UserProfile  # Import the UserProfile model
 
 from .models import Comment
 
+from taggit.forms import TagWidget  # Import TagWidget for tag management
+from .models import Tag  # Import the Tag model if it's in the same app
+from taggit.forms import TagField
+
+
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
@@ -35,10 +41,22 @@ class UserProfileForm(forms.ModelForm):
 
 
 class PostForm(forms.ModelForm):
+    tags = TagField(required=False)
+    
     class Meta:
         model = Post
         fields = ['title', 'content' , 'author' , 'tags']
+    
+    
 
+    def clean_tags(self):
+        """
+        Convert the entered tags into tag objects if they don't exist.
+        """
+        tags = self.cleaned_data['tags']
+        tag_names = [tag.strip() for tag in tags.split(',')]
+        return tag_names
+    
     # Automatically set the author to the current logged-in user
     def save(self, user, commit=True):
         blog_post = super().save(commit=False)
