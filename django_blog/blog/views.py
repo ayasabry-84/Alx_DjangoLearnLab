@@ -142,6 +142,23 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.post.pk})
+
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/edit_comment.html'
+
+    # Ensure that only the logged-in user can edit their own comment
+    def get_queryset(self):
+        return Comment.objects.filter(author=self.request.user)
+
+    def form_valid(self, form):
+        # Optionally, you can add custom behavior here if needed
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect back to the post detail page after successfully editing the comment
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.post.pk})
     
 class CommentDeleteView(LoginRequiredMixin, DeleteView):
     model = Comment
