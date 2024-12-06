@@ -41,12 +41,9 @@ class UserProfileForm(forms.ModelForm):
 
 
 class PostForm(forms.ModelForm):
-    tags = TagField(required=False)
-    
     class Meta:
         model = Post
         fields = ['title', 'content' , 'author' , 'tags']
-    
     
 
     def clean_tags(self):
@@ -71,22 +68,28 @@ class PostForm(forms.ModelForm):
         if not content:
             raise forms.ValidationError("Content cannot be empty.")
         return content
+    
+    tags = forms.CharField(
+        widget=TagWidget,  # Using the custom TagWidget here
+        required=False
+    )
 
 class TagWidget(forms.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+
     def render(self, name, value, attrs=None, renderer=None):
+        # Get all tags from the database
         tags = Tag.objects.all()
         tag_list_html = ""
-        
-        # Render the list of tags as checkboxes
-        for tag in tags:
-            checked = 'checked' if tag in value else ''
-            tag_list_html += f'<label><input type="checkbox" name="{name}" value="{tag.id}" {checked}> {tag.name}</label><br>'
-        
-        return tag_list_html
 
+        # Render the list of tags as checkboxes or another HTML element
+        for tag in tags:
+            checked = 'checked' if tag.id in value else ''  # 'value' contains selected tag IDs
+            tag_list_html += f'<label><input type="checkbox" name="{name}" value="{tag.id}" {checked}> {tag.name}</label><br>'
+
+        return tag_list_html
+    
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
