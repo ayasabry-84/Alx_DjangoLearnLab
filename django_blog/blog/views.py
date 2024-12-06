@@ -131,6 +131,17 @@ def post_detail(request, pk):
         'form': form
     })
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_by_tag.html'  # The template that will display the posts
+    context_object_name = 'posts'  # Name of the context variable in the template
+
+    def get_queryset(self):
+        tag_name = self.kwargs['tag_name']  # Get the tag name from the URL
+        tag = get_object_or_404(Tag, name=tag_name)  # Retrieve the tag object
+        return Post.objects.filter(tags=tag)  # Filter posts by the tag
+    
+    
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
