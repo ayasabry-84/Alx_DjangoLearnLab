@@ -211,10 +211,10 @@ def create_post(request):
     return render(request, 'blog/create_post.html', {'form': form})
 
 def search_posts(request):
-    query = request.GET.get('q')
+    query = request.GET.get('q', '')  # Get the search query from the URL parameters
     if query:
-        posts = Post.objects.filter(tags__name__icontains=query) | Post.objects.filter(content__icontains=query)
+        posts = Post.objects.filter(title__icontains=query)  # Use 'title__icontains' to search case-insensitively in titles
     else:
-        posts = Post.objects.all()
+        posts = Post.objects.all()  # If no query, show all posts
 
-    return render(request, 'search_results.html', {'posts': posts})
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
