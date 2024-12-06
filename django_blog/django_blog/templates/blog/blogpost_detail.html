@@ -1,0 +1,12 @@
+<!-- blog/templates/blog/blogpost_detail.html -->
+
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+<p>By {{ object.author }}</p>
+<p>{{ object.content }}</p>
+
+<p><a href="{% url 'blog:post_edit' object.pk %}">Edit this post</a></p>
+<p><a href="{% url 'blog:post_list' %}">Back to all posts</a></p>
+{% endblock %}
