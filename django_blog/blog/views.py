@@ -7,10 +7,10 @@ from .forms import UserProfileForm  # Assume you have a UserProfileForm for prof
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import BlogPost
+from .models import Post
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from .forms import BlogPostForm
+from .forms import PostForm
 
 
 # Registration View
@@ -57,21 +57,21 @@ def user_logout(request):
     return redirect('home')  # Redirect to home or login page
 
 class BlogPostListView(ListView):
-    model = BlogPost
+    model = Post
     template_name = 'blog/blogpost_list.html'
     context_object_name = 'blog_posts'
     ordering = ['-created_at']  # Order by creation date, newest first
 
 # Show a single blog post's details
 class BlogPostDetailView(DetailView):
-    model = BlogPost
+    model = Post
     template_name = 'blog/blogpost_detail.html'
     context_object_name = 'blog_post'
 
 # Create a new blog post
 class BlogPostCreateView(LoginRequiredMixin, CreateView):
-    model = BlogPost
-    form_class = BlogPostForm  # Use the custom form
+    model = Post
+    form_class = PostForm  # Use the custom form
     template_name = 'blog/blogpost_form.html'
     success_url = reverse_lazy('blog:post_list')  # Redirect to the list of posts after successful creation
 
@@ -81,8 +81,8 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
 
 # Update an existing blog post
 class BlogPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = BlogPost
-    form_class = BlogPostForm  # Use the custom form
+    model = Post
+    form_class = PostForm  # Use the custom form
     template_name = 'blog/blogpost_form.html'
 
     def form_valid(self, form):
@@ -95,7 +95,7 @@ class BlogPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 # Delete a blog post
 class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = BlogPost
+    model = Post
     template_name = 'blog/blogpost_confirm_delete.html'
     success_url = reverse_lazy('blog:post_list')  # Redirect after successful deletion
 
