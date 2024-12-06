@@ -39,6 +39,7 @@ class UserProfileForm(forms.ModelForm):
             user_profile.save()  # Save profile data
         return user_profile
 
+TagWidget()
 
 class PostForm(forms.ModelForm):
     class Meta:
