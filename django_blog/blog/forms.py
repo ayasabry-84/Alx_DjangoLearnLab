@@ -3,12 +3,12 @@
 from django import forms
 from .models import Post
 
-
-#_____________________________________________________________________
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import UserProfile  # Import the UserProfile model
+
+from .models import Comment
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -36,7 +36,6 @@ class UserProfileForm(forms.ModelForm):
         return user_profile
 
 
-
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -56,3 +55,24 @@ class PostForm(forms.ModelForm):
         if not content:
             raise forms.ValidationError("Content cannot be empty.")
         return content
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']  # Include fields you want the user to fill
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Write your comment here...',
+                'rows': 4,
+            }),
+        }
+        labels = {
+            'content': 'Your Comment',
+        }
+
+def clean_content(self):
+    content = self.cleaned_data.get('content')
+    if len(content) < 5:
+        raise forms.ValidationError("Comment must be at least 5 characters long.")
+    return content

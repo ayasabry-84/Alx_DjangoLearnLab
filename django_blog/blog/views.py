@@ -5,9 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserProfileForm  # Assume you have a UserProfileForm for profile editing.
 
-from django.shortcuts import render, redirect
 from django.views import View
-from django.contrib.auth import login
 from .forms import CustomUserCreationForm
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -19,6 +17,10 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from .forms import PostForm
 
+from .models import Post, Comment
+from .forms import CommentForm
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 
 
 def register(request):
@@ -59,10 +61,6 @@ def profile(request):
 def user_logout(request):
     logout(request)  # Log the user out
     return redirect('login')  # Redirect to login page or home page
-#________________________________________________________________________________________
-#________________________________________________________________________________________
-#________________________________________________________________________________________
-
 
 
 class BlogPostListView(ListView):
@@ -111,3 +109,48 @@ class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         blog_post = self.get_object()
         return blog_post.author == self.request.user  # Ensure only the author can delete
+    
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    comments = Comment.objects.filter(post=post)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect('blog:post_detail', pk=post.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'blog/post_detail.html', {
+        'object': post,
+        'comments': comments,
+        'form': form
+    })
+
+@login_required
+def edit_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if comment.author != request.user:
+        return HttpResponseForbidden("You are not allowed to edit this comment.")
+    
+    if request.method == "POST":
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:post_detail', pk=comment.post.pk)
+    else:
+        form = CommentForm(instance=comment)
+    return render(request, 'blog/edit_comment.html', {'form': form, 'comment': comment})
+
+# Delete a comment
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if comment.author != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this comment.")
+    
+    post_pk = comment.post.pk
+    comment.delete()
+    return redirect('blog:post_detail', pk=post_pk)

@@ -26,4 +26,9 @@ urlpatterns = [
 
     path('profile/', views.profile, name='profile'),  # Custom profile view
 
+    path('<int:pk>/', views.post_detail, name='post_detail'),
+    path('<int:post_id>/comments/new/', views.post_detail, name='add_comment'),
+    path('comment/<int:pk>/edit/', views.edit_comment, name='edit_comment'),
+    path('comment/<int:pk>/delete/', views.delete_comment, name='delete_comment'),
+
 ]
