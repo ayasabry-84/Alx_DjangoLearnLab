@@ -63,20 +63,20 @@ def user_logout(request):
     return redirect('login')  # Redirect to login page or home page
 
 
-class BlogPostListView(ListView):
+class PostListView(ListView):
     model = Post
     template_name = 'blog/blogpost_list.html'
     context_object_name = 'blog_posts'
     ordering = ['-created_at']  # Order by creation date, newest first
 
 # Show a single blog post's details
-class BlogPostDetailView(DetailView):
+class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/blogpost_detail.html'
     context_object_name = 'blog_post'
 
 # Create a new blog post
-class BlogPostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm  # Use the custom form
     template_name = 'blog/blogpost_form.html'
@@ -87,7 +87,7 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 # Update an existing blog post
-class BlogPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm  # Use the custom form
     template_name = 'blog/blogpost_form.html'
@@ -101,7 +101,7 @@ class BlogPostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return blog_post.author == self.request.user  # Ensure only the author can edit
 
 # Delete a blog post
-class BlogPostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/blogpost_confirm_delete.html'
     success_url = reverse_lazy('blog:post_list')  # Redirect after successful deletion

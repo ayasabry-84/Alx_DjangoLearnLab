@@ -1,5 +1,3 @@
-# blog/forms.py
-
 from django import forms
 from .models import Post
 
@@ -39,7 +37,7 @@ class UserProfileForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content' , 'author' , 'tags']
 
     # Automatically set the author to the current logged-in user
     def save(self, user, commit=True):

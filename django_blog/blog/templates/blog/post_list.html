@@ -1,5 +1,5 @@
 <!-- blog/templates/blog/blogpost_list.html -->
-
+{% load static %}
 {% extends 'base_generic.html' %}
 
 {% block content %}
@@ -19,3 +19,16 @@
 
 <a href="{% url 'blog:post_create' %}">Create a new post</a>
 {% endblock %}
+
+<!-- blog/templates/blog/post_list.html -->
+{% for post in posts %}
+<div class="post">
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.content }}</p>
+    <p><strong>Tags:</strong>
+        {% for tag in post.tags.all %}
+        <span>{{ tag.name }}</span>
+        {% endfor %}
+    </p>
+</div>
+{% endfor %}
