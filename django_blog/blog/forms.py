@@ -72,6 +72,21 @@ class PostForm(forms.ModelForm):
             raise forms.ValidationError("Content cannot be empty.")
         return content
 
+class TagWidget(forms.Widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def render(self, name, value, attrs=None, renderer=None):
+        tags = Tag.objects.all()
+        tag_list_html = ""
+        
+        # Render the list of tags as checkboxes
+        for tag in tags:
+            checked = 'checked' if tag in value else ''
+            tag_list_html += f'<label><input type="checkbox" name="{name}" value="{tag.id}" {checked}> {tag.name}</label><br>'
+        
+        return tag_list_html
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
