@@ -20,4 +20,6 @@ from django.urls import path , include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),  # Include blog URLs
+    path('accounts/', include('django.contrib.auth.urls')),  # This includes the built-in auth views (login, logout, password change, etc.)
+
 ]

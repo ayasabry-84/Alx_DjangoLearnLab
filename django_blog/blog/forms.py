@@ -3,6 +3,40 @@
 from django import forms
 from .models import Post
 
+
+#_____________________________________________________________________
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+from .models import UserProfile  # Import the UserProfile model
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']  # Default user fields
+
+class UserProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    bio = forms.CharField(widget=forms.Textarea, required=False)
+    profile_picture = forms.ImageField(required=False)
+    
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_picture']
+
+    # Override to save both user and profile data
+    def save(self, commit=True):
+        user_profile = super().save(commit=False)
+        user_profile.user.email = self.cleaned_data['email']
+        if commit:
+            user_profile.user.save()  # Save user email
+            user_profile.save()  # Save profile data
+        return user_profile
+
+
+
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
