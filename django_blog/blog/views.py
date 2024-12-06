@@ -212,8 +212,17 @@ def create_post(request):
 
 def search_posts(request):
     query = request.GET.get('q', '')  # Get the search query from the URL parameters
+
     if query:
-        posts = Post.objects.filter(title__icontains=query)  # Use 'title__icontains' to search case-insensitively in titles
+        # Search posts by title, content, or tag name
+        posts = Post.objects.filter(
+            title__icontains=query  # Case-insensitive search in the title
+        ).filter(
+            content__icontains=query  # Case-insensitive search in the content
+        ).filter(
+            tags__name__icontains=query  # Case-insensitive search in tag names
+        ).distinct()  # Ensure posts are only shown once
+
     else:
         posts = Post.objects.all()  # If no query, show all posts
 
