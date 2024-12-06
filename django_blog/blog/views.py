@@ -129,6 +129,30 @@ def post_detail(request, pk):
         'form': form
     })
 
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/add_comment.html'
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        form.instance.author = self.request.user
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.post.pk})
+    
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/confirm_delete_comment.html'
+
+    def get_queryset(self):
+        return Comment.objects.filter(author=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.post.pk})
+
 @login_required
 def edit_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
