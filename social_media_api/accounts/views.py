@@ -61,3 +61,6 @@ class UnfollowUserView(GenericAPIView):
             return Response({"message": f"You have unfollowed {username}."})
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
+        
+generics.GenericAPIView, 
+permissions.IsAuthenticated
