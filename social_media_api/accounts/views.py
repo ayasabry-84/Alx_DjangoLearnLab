@@ -38,24 +38,26 @@ class ProfileView(APIView):
 from django.shortcuts import get_object_or_404
 from .models import CustomUser
 
-class FollowUserView(APIView):
+class FollowUserView(GenericAPIView):
     permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
 
     def post(self, request, username):
-        user_to_follow = get_object_or_404(CustomUser, username=username)
-        if user_to_follow == request.user:
-            return Response({'error': 'You cannot follow yourself.'}, status=400)
-        
-        request.user.following.add(user_to_follow)
-        return Response({'message': f'You are now following {username}.'})
+        try:
+            user_to_follow = CustomUser.objects.get(username=username)
+            request.user.following.add(user_to_follow)
+            return Response({"message": f"You are now following {username}."})
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
 
-class UnfollowUserView(APIView):
+class UnfollowUserView(GenericAPIView):
     permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
 
     def post(self, request, username):
-        user_to_unfollow = get_object_or_404(CustomUser, username=username)
-        if user_to_unfollow == request.user:
-            return Response({'error': 'You cannot unfollow yourself.'}, status=400)
-        
-        request.user.following.remove(user_to_unfollow)
-        return Response({'message': f'You have unfollowed {username}.'})
+        try:
+            user_to_unfollow = CustomUser.objects.get(username=username)
+            request.user.following.remove(user_to_unfollow)
+            return Response({"message": f"You have unfollowed {username}."})
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
