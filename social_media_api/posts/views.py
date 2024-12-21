@@ -16,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'content']  # Enable searching by title or content
 
     # Ensure the user can only create posts with their own user as the author
-    def create(self, serializer):
+    def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
@@ -30,7 +30,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Ensure the user is authenticated
 
     # Ensure the user can only create comments with their own user as the author
-    def create(self, serializer):
+    def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
