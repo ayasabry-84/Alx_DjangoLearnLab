@@ -36,3 +36,28 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Ensure the user can only see their own comments on posts they created
         return Comment.objects.filter(author=self.request.user)
+    
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Post
+from accounts.models import CustomUser 
+
+class FeedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        following_users = request.user.following.all()
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+        feed_data = [
+            {
+                'id': post.id,
+                'author': post.author.username,
+                'title': post.title,
+                'content': post.content,
+                'created_at': post.created_at,
+            }
+            for post in posts
+        ]
+        return Response(feed_data)

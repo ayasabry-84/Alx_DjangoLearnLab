@@ -30,3 +30,29 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+from django.shortcuts import get_object_or_404
+from .models import CustomUser
+
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, username):
+        user_to_follow = get_object_or_404(CustomUser, username=username)
+        if user_to_follow == request.user:
+            return Response({'error': 'You cannot follow yourself.'}, status=400)
+        
+        request.user.following.add(user_to_follow)
+        return Response({'message': f'You are now following {username}.'})
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, username):
+        user_to_unfollow = get_object_or_404(CustomUser, username=username)
+        if user_to_unfollow == request.user:
+            return Response({'error': 'You cannot unfollow yourself.'}, status=400)
+        
+        request.user.following.remove(user_to_unfollow)
+        return Response({'message': f'You have unfollowed {username}.'})
