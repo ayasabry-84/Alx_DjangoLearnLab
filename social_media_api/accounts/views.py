@@ -9,7 +9,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from rest_framework.generics import GenericAPIView
+from rest_framework.generics import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
+
 
 
 
@@ -35,11 +38,10 @@ class ProfileView(APIView):
         return Response(serializer.data)
 
 
-from django.shortcuts import get_object_or_404
 from .models import CustomUser
 
-class FollowUserView(GenericAPIView):
-    permission_classes = [IsAuthenticated]
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = CustomUser.objects.all()
 
     def post(self, request, username):
@@ -50,8 +52,8 @@ class FollowUserView(GenericAPIView):
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
 
-class UnfollowUserView(GenericAPIView):
-    permission_classes = [IsAuthenticated]
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = CustomUser.objects.all()
 
     def post(self, request, username):
@@ -62,5 +64,3 @@ class UnfollowUserView(GenericAPIView):
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
         
-generics.GenericAPIView, 
-permissions.IsAuthenticated
