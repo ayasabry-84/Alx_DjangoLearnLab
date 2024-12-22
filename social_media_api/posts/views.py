@@ -70,9 +70,9 @@ class FeedView(APIView):
 class LikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, post_id):
+    def post(self, request, pk):
         try:
-            post = generics.get_object_or_404(Post, id=post_id)
+            post = generics.get_object_or_404(Post, pk=pk)
             like, created = Like.objects.get_or_create(user=request.user, post=post)
             if created:
                 # إنشاء إشعار
@@ -91,9 +91,9 @@ class LikePostView(APIView):
 class UnlikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, post_id):
+    def post(self, request, pk):
         try:
-            post = generics.get_object_or_404(Post, id=post_id)
+            post = generics.get_object_or_404(Post, pk=pk)
             like = Like.objects.filter(user=request.user, post=post)
             if like.exists():
                 like.delete()
