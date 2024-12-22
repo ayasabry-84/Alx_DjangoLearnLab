@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Post, Like
 from accounts.models import CustomUser 
 from notifications.models import Notification
+from django.shortcuts import get_object_or_404
 
 
 User = get_user_model()
@@ -69,7 +70,7 @@ class LikePostView(APIView):
 
     def post(self, request, post_id):
         try:
-            post = Post.objects.get(id=post_id)
+            post = get_object_or_404(Post, id=post_id)
             like, created = Like.objects.get_or_create(user=request.user, post=post)
             if created:
                 # إنشاء إشعار
@@ -90,7 +91,7 @@ class UnlikePostView(APIView):
 
     def post(self, request, post_id):
         try:
-            post = Post.objects.get(id=post_id)
+            post = get_object_or_404(Post, id=post_id)
             like = Like.objects.filter(user=request.user, post=post)
             if like.exists():
                 like.delete()
