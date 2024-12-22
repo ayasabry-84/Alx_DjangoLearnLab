@@ -9,11 +9,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from rest_framework.generics import GenericAPIView
-from rest_framework.generics import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
-
-
+from rest_framework import generics
 
 
 class RegisterView(APIView):
